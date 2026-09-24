@@ -1,0 +1,784 @@
+/* ================= GENERAL ================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background: #fff;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img {
+    width: 100%;
+    display: block;
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    height: 75px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 8%;
+
+    background: white;
+
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: bold;
+    color: #f15d30;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 30px;
+}
+
+.navbar nav a {
+    font-size: 15px;
+    color: #333;
+    transition: 0.3s;
+}
+
+.navbar nav a:hover {
+    color: #f15d30;
+}
+
+
+/* ================= HERO ================= */
+
+.hero {
+    height: 650px;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.45)
+        ),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 8%;
+}
+
+.hero-content {
+    max-width: 650px;
+    color: white;
+}
+
+.small-title {
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+}
+
+.hero h1 {
+    font-size: 58px;
+    line-height: 1.15;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+
+/* ================= BUTTON ================= */
+
+.btn {
+    display: inline-block;
+
+    padding: 13px 28px;
+
+    background: #f15d30;
+    color: white;
+
+    border-radius: 4px;
+
+    font-size: 15px;
+
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #d9471d;
+}
+
+
+/* ================= SEARCH ================= */
+
+.search-box {
+    width: 84%;
+
+    margin: -45px auto 0;
+
+    position: relative;
+    z-index: 10;
+
+    padding: 25px;
+
+    background: white;
+
+    display: flex;
+    gap: 15px;
+    align-items: end;
+
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+.search-item {
+    flex: 1;
+}
+
+.search-item label {
+    display: block;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+.search-item input,
+.search-item select {
+    width: 100%;
+
+    height: 45px;
+
+    border: 1px solid #ddd;
+
+    padding: 10px;
+}
+
+.search-box button {
+    height: 45px;
+
+    padding: 0 25px;
+
+    border: none;
+
+    background: #f15d30;
+    color: white;
+
+    cursor: pointer;
+}
+
+
+/* ================= COMMON HEADING ================= */
+
+.heading {
+    text-align: center;
+
+    max-width: 700px;
+
+    margin: 0 auto 50px;
+}
+
+.section-title {
+    color: #f15d30;
+
+    font-size: 13px;
+
+    letter-spacing: 3px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+.heading h2 {
+    font-size: 38px;
+
+    margin-bottom: 12px;
+
+    color: #222;
+}
+
+.heading > p:last-child {
+    color: #777;
+}
+
+
+/* ================= ABOUT ================= */
+
+.about {
+    padding: 100px 8%;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 70px;
+
+    align-items: center;
+}
+
+.about-image img {
+    height: 450px;
+
+    object-fit: cover;
+}
+
+.about-content h2 {
+    font-size: 40px;
+
+    line-height: 1.2;
+
+    margin-bottom: 20px;
+
+    color: #222;
+}
+
+.about-content p {
+    color: #777;
+
+    margin-bottom: 20px;
+}
+
+
+/* ================= DESTINATIONS ================= */
+
+.places {
+    padding: 90px 8%;
+
+    background: #f7f7f7;
+}
+
+.destination-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 25px;
+}
+
+.destination-card {
+    background: white;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.08);
+
+    transition: 0.3s;
+}
+
+.destination-card:hover {
+    transform: translateY(-8px);
+}
+
+.destination-card img {
+    height: 230px;
+
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.card-content h3 {
+    font-size: 22px;
+
+    margin-bottom: 5px;
+}
+
+.card-content p {
+    color: #888;
+
+    margin-bottom: 10px;
+}
+
+.card-content span {
+    color: #f15d30;
+
+    font-weight: bold;
+}
+
+
+/* ================= SERVICES ================= */
+
+.services {
+    padding: 90px 8%;
+}
+
+.service-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 25px;
+}
+
+.service {
+    text-align: center;
+
+    padding: 35px 20px;
+
+    border: 1px solid #eee;
+
+    transition: 0.3s;
+}
+
+.service:hover {
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.1);
+
+    transform: translateY(-5px);
+}
+
+.icon {
+    font-size: 40px;
+
+    margin-bottom: 15px;
+}
+
+.service h3 {
+    margin-bottom: 10px;
+}
+
+.service p {
+    color: #777;
+}
+
+
+/* ================= HOTEL ================= */
+
+.hotel {
+    padding: 90px 8%;
+
+    background: #f7f7f7;
+}
+
+.hotel-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 30px;
+}
+
+.hotel-card {
+    background: white;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.hotel-card img {
+    height: 250px;
+
+    object-fit: cover;
+}
+
+.hotel-content {
+    padding: 22px;
+}
+
+.hotel-content h3 {
+    font-size: 22px;
+
+    margin-bottom: 5px;
+}
+
+.hotel-content p {
+    color: #888;
+
+    margin-bottom: 15px;
+}
+
+.hotel-bottom {
+    display: flex;
+
+    justify-content: space-between;
+}
+
+.hotel-bottom span {
+    color: #f15d30;
+}
+
+.hotel-bottom strong {
+    color: #333;
+}
+
+
+/* ================= CTA ================= */
+
+.cta {
+    min-height: 400px;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5)
+        ),
+        url("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    color: white;
+}
+
+.cta p {
+    letter-spacing: 3px;
+
+    font-size: 13px;
+}
+
+.cta h2 {
+    font-size: 45px;
+
+    margin: 15px 0 25px;
+}
+
+
+/* ================= BLOG ================= */
+
+.blog {
+    padding: 90px 8%;
+}
+
+.blog-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 30px;
+}
+
+.blog-card {
+    background: white;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.blog-card img {
+    height: 230px;
+
+    object-fit: cover;
+}
+
+.blog-content {
+    padding: 22px;
+}
+
+.blog-content > p {
+    color: #999;
+
+    font-size: 13px;
+
+    margin-bottom: 10px;
+}
+
+.blog-content h3 {
+    font-size: 21px;
+
+    margin-bottom: 15px;
+}
+
+.blog-content a {
+    color: #f15d30;
+
+    font-weight: bold;
+}
+
+
+/* ================= CONTACT ================= */
+
+.contact {
+    padding: 90px 8%;
+
+    background: #f7f7f7;
+}
+
+.contact-container {
+    display: grid;
+
+    grid-template-columns:
+        1.5fr 1fr;
+
+    gap: 60px;
+}
+
+.contact form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.contact input,
+.contact textarea {
+    width: 100%;
+
+    padding: 15px;
+
+    border: 1px solid #ddd;
+
+    background: white;
+
+    outline: none;
+}
+
+.contact button {
+    width: 160px;
+
+    padding: 14px;
+
+    border: none;
+
+    background: #f15d30;
+
+    color: white;
+
+    cursor: pointer;
+}
+
+.contact-info {
+    padding: 10px;
+}
+
+.contact-info h3 {
+    font-size: 25px;
+
+    margin-bottom: 20px;
+}
+
+.contact-info p {
+    color: #777;
+
+    margin-bottom: 20px;
+}
+
+
+/* ================= FOOTER ================= */
+
+footer {
+    background: #222;
+
+    color: white;
+
+    padding-top: 70px;
+}
+
+.footer-container {
+    padding: 0 8% 50px;
+
+    display: grid;
+
+    grid-template-columns:
+        2fr 1fr 1fr 1fr;
+
+    gap: 50px;
+}
+
+.footer-box h2 {
+    font-size: 30px;
+
+    color: #f15d30;
+
+    margin-bottom: 15px;
+}
+
+.footer-box h3 {
+    margin-bottom: 20px;
+}
+
+.footer-box p {
+    color: #aaa;
+
+    margin-bottom: 8px;
+}
+
+.footer-box a {
+    display: block;
+
+    color: #aaa;
+
+    margin-bottom: 10px;
+
+    transition: 0.3s;
+}
+
+.footer-box a:hover {
+    color: #f15d30;
+}
+
+.copyright {
+    border-top: 1px solid #444;
+
+    text-align: center;
+
+    padding: 20px;
+
+    color: #888;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1000px) {
+
+    .destination-container,
+    .service-container {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .hotel-container,
+    .blog-container {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .search-box {
+        flex-wrap: wrap;
+    }
+
+    .search-item {
+        min-width: 45%;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .navbar {
+        height: auto;
+
+        padding: 20px;
+
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .navbar nav {
+        gap: 15px;
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+    }
+
+    .hero {
+        height: 550px;
+
+        padding: 0 6%;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .search-box {
+        width: 90%;
+
+        margin-top: -30px;
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .search-item {
+        min-width: 100%;
+    }
+
+    .about {
+        grid-template-columns: 1fr;
+
+        padding: 70px 6%;
+    }
+
+    .about-image img {
+        height: 350px;
+    }
+
+    .destination-container,
+    .service-container,
+    .hotel-container,
+    .blog-container {
+        grid-template-columns: 1fr;
+    }
+
+    .places,
+    .services,
+    .hotel,
+    .blog,
+    .contact {
+        padding: 70px 6%;
+    }
+
+    .contact-container {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr 1fr;
+
+        padding: 0 6% 40px;
+    }
+
+    .heading h2 {
+        font-size: 30px;
+    }
+
+}
