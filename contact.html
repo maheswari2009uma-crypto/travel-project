@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Pacific</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Pacific</div>
+        <nav>
+            <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+            <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="places.html" target="_blank" rel="noopener noreferrer">Places</a>
+            <a href="hotels.html" target="_blank" rel="noopener noreferrer">Hotels</a>
+            <a href="blog.html" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="contact.html" target="_blank" rel="noopener noreferrer">Contact</a>
+        </nav>
+    </header>
+
+    <section class="contact">
+        <div class="heading">
+            <p class="section-title">CONTACT US</p>
+            <h2>Get In Touch</h2>
+        </div>
+
+        <div class="contact-container">
+            <form id="contact-form">
+                <input type="text" name="name" placeholder="Your Name" maxlength="100" required>
+                <input type="email" name="email" placeholder="Your Email" maxlength="254" required>
+                <input type="text" name="subject" placeholder="Subject" maxlength="150" required>
+                <textarea rows="6" name="message" placeholder="Message" maxlength="5000" required></textarea>
+                <button type="submit">Send Message</button>
+                <p class="form-status" id="contact-status" role="status" aria-live="polite"></p>
+            </form>
+
+            <div class="contact-info">
+                <h3>Contact Information</h3>
+                <p>Have questions about your next trip? Send us a message.</p>
+                <p><strong>📍 Address:</strong><br>Hyderabad, India</p>
+                <p><strong>📞 Phone:</strong><br>+91 98765 43210</p>
+                <p><strong>✉ Email:</strong><br>info@pacific.com</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="app.js" defer></script>
+</body>
+</html>

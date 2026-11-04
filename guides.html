@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose a Travel Guide - Pacific</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .guides-page {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 24px;
+        }
+
+        .guides-intro { margin-bottom: 24px; }
+        .guide-search, .guide-booking {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0;
+            padding: 24px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 18px #00000014;
+        }
+        .guide-search { grid-template-columns: 1fr auto; }
+        .guide-search label, .guide-booking label { display: grid; gap: 7px; }
+        .guide-search input, .guide-booking input {
+            width: 100%;
+            min-height: 46px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font: inherit;
+        }
+        .guide-search button, .guide-card button, .guide-booking button, .guide-confirmation button {
+            min-height: 44px;
+            padding: 10px 20px;
+            border: 0;
+            border-radius: 5px;
+            background: #f15d30;
+            color: #fff;
+            font: inherit;
+            cursor: pointer;
+        }
+        .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .guide-card {
+            overflow: hidden;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 18px #00000018;
+        }
+        .guide-card img { width: 100%; height: 240px; object-fit: cover; }
+        .guide-card-content { padding: 20px; }
+        .guide-card-content h2 { margin-bottom: 8px; }
+        .guide-card-content p { margin: 8px 0; color: #666; line-height: 1.5; }
+        .guide-rating { color: #e99b00 !important; font-weight: bold; }
+        .guide-price { color: #f15d30 !important; font-weight: bold; }
+        .guide-booking { grid-template-columns: 1fr 1fr; }
+        .guide-booking h2, .guide-booking .full-width { grid-column: 1 / -1; }
+        .guide-summary { padding: 14px; background: #f7f7f7; border-radius: 6px; }
+        .guide-status { min-height: 24px; margin: 12px 0; color: #555; }
+        .guide-booking button:disabled { opacity: .6; cursor: wait; }
+        .guide-confirmation {
+            width: min(90%, 460px);
+            margin: auto;
+            padding: 30px;
+            border: 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .guide-confirmation::backdrop { background: #0008; }
+        .guide-confirmation h2 { color: #18864b; }
+        @media (max-width: 850px) { .guide-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 650px) {
+            .guide-grid, .guide-search, .guide-booking { grid-template-columns: 1fr; }
+            .guide-booking h2, .guide-booking .full-width { grid-column: auto; }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Pacific</div>
+        <nav>
+            <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+            <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="places.html" target="_blank" rel="noopener noreferrer">Places</a>
+            <a href="hotels.html" target="_blank" rel="noopener noreferrer">Hotels</a>
+            <a href="blog.html" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="contact.html" target="_blank" rel="noopener noreferrer">Contact</a>
+        </nav>
+    </header>
+
+    <main class="guides-page">
+        <p class="section-title">TRAVEL GUIDES</p>
+        <h1>Choose Your Travel Guide</h1>
+        <p class="guides-intro">Compare guide details, languages, experience, ratings, and sample daily prices.</p>
+
+        <form id="guide-search" class="guide-search">
+            <label for="guide-destination">Search by destination or guide name
+                <input id="guide-destination" type="search" placeholder="For example, Paris" autocomplete="off">
+            </label>
+            <button type="submit">Search Guides</button>
+        </form>
+
+        <p id="guide-status" class="guide-status" role="status" aria-live="polite">Loading guides...</p>
+        <section id="guide-grid" class="guide-grid" aria-label="Available travel guides"></section>
+
+        <form id="guide-booking" class="guide-booking" hidden>
+            <h2>Book Your Selected Guide</h2>
+            <div id="selected-guide" class="guide-summary full-width"></div>
+
+            <label>From date
+                <input id="guide-from-date" type="date" required>
+            </label>
+            <label>To date
+                <input id="guide-to-date" type="date" required>
+            </label>
+
+            <p id="guide-total" class="guide-summary full-width">Choose valid dates to see the sample cost.</p>
+
+            <label>Full name
+                <input name="name" type="text" maxlength="100" required>
+            </label>
+            <label>Email
+                <input name="email" type="email" maxlength="254" required>
+            </label>
+            <label>Aadhaar number (12 digits)
+                <input name="aadharNumber" type="text" inputmode="numeric" pattern="[0-9]{12}" minlength="12" maxlength="12" placeholder="Enter any 12 digits" required>
+            </label>
+            <label>Payment amount (demo only)
+                <input name="paymentAmount" type="number" min="0" step="any" placeholder="Enter an amount" required>
+            </label>
+
+            <button id="guide-book-button" class="full-width" type="submit" disabled>Book Now</button>
+            <p id="guide-booking-status" class="guide-status full-width" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <dialog id="guide-confirmation" class="guide-confirmation">
+        <h2>Booking confirmed!</h2>
+        <p id="guide-confirmation-message"></p>
+        <button id="close-guide-confirmation" type="button">Close</button>
+    </dialog>
+
+    <script>
+        const searchForm = document.getElementById('guide-search');
+        const destinationInput = document.getElementById('guide-destination');
+        const statusText = document.getElementById('guide-status');
+        const guideGrid = document.getElementById('guide-grid');
+        const bookingForm = document.getElementById('guide-booking');
+        const fromDateInput = document.getElementById('guide-from-date');
+        const toDateInput = document.getElementById('guide-to-date');
+        const totalText = document.getElementById('guide-total');
+        const bookButton = document.getElementById('guide-book-button');
+        const bookingStatus = document.getElementById('guide-booking-status');
+        const confirmation = document.getElementById('guide-confirmation');
+        let selectedGuide = null;
+
+        // Local demo guides are used if the server's guides API is unavailable.
+        const sampleGuides = [
+            {
+                id: 'guide-anna', name: 'Anna Williams', destination: 'Paris, Venice, Kyoto & Bali',
+                languages: ['English', 'French'], rating: 4.8, experience: '5 years',
+                about: 'Anna helps visitors discover Paris landmarks, cafés, art, and local neighborhoods.',
+                howTheyWork: 'She plans a walking itinerary with you and shares local history between nearby sights.',
+                pricePerDay: 80,
+                image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80'
+            },
+            {
+                id: 'guide-kenji', name: 'Kenji Sato', destination: 'Paris, Venice, Kyoto & Bali',
+                languages: ['English', 'Japanese'], rating: 4.9, experience: '7 years',
+                about: 'Kenji specializes in Kyoto temples, gardens, traditional streets, and local customs.',
+                howTheyWork: 'He plans a route around your interests and guides you by foot and public transport.',
+                pricePerDay: 75,
+                image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80'
+            },
+            {
+                id: 'guide-maya', name: 'Maya Putri', destination: 'Paris, Venice, Kyoto & Bali',
+                languages: ['English', 'Indonesian'], rating: 4.7, experience: '6 years',
+                about: 'Maya introduces visitors to Bali’s temples, rice terraces, beaches, and local food.',
+                howTheyWork: 'She agrees on the day’s stops with you and helps arrange a practical island route.',
+                pricePerDay: 65,
+                image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80'
+            }
+        ];
+
+        const today = new Date().toISOString().slice(0, 10);
+        fromDateInput.min = today;
+        toDateInput.min = today;
+
+        async function loadGuides(query = '') {
+            statusText.textContent = 'Loading guides...';
+            guideGrid.replaceChildren();
+            bookingForm.hidden = true;
+            selectedGuide = null;
+
+            let guides = [];
+            try {
+                const url = new URL('/api/guides', window.location.origin);
+                if (query) url.searchParams.set('q', query);
+                const response = await fetch(url, { headers: { Accept: 'application/json' } });
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); }
+                catch { throw new Error(`Server returned a non-JSON response (HTTP ${response.status}).`); }
+                if (!response.ok) throw new Error(data.error || `Request failed (HTTP ${response.status}).`);
+                if (!Array.isArray(data.results)) throw new Error('The guides response is missing its results list.');
+                guides = data.results;
+            } catch (error) {
+                console.warn('Guide API unavailable; using local sample guides.', error);
+                const normalizedQuery = query.toLowerCase();
+                guides = sampleGuides.filter((guide) =>
+                    !normalizedQuery || `${guide.name} ${guide.destination} ${guide.languages.join(' ')}`.toLowerCase().includes(normalizedQuery)
+                );
+            }
+
+            // Fill gaps from local data so the page still shows all three demo guides.
+            const matchingSamples = sampleGuides.filter((guide) => {
+                const matches = !query || `${guide.name} ${guide.destination} ${guide.languages.join(' ')}`.toLowerCase().includes(query.toLowerCase());
+                return matches && !guides.some((item) => item.id === guide.id);
+            });
+            guides = [...guides, ...matchingSamples];
+
+            if (guides.length === 0) {
+                statusText.textContent = 'No guides found for that search. Try Paris, Kyoto, or Bali.';
+                return;
+            }
+
+            statusText.textContent = guides.length === sampleGuides.length
+                ? 'Choose from these 3 sample travel guides:'
+                : `Choose from ${guides.length} available guide${guides.length === 1 ? '' : 's'}:`;
+            guides.forEach((guide) => {
+                    const card = document.createElement('article');
+                    card.className = 'guide-card';
+                    const image = document.createElement('img');
+                    image.src = guide.image;
+                    image.alt = `Travel guide ${guide.name}`;
+                    image.loading = 'lazy';
+
+                    const content = document.createElement('div');
+                    content.className = 'guide-card-content';
+                    const name = document.createElement('h2');
+                    name.textContent = guide.name;
+                    const destination = document.createElement('p');
+                    destination.textContent = `Destination: ${guide.destination}`;
+                    const rating = document.createElement('p');
+                    rating.className = 'guide-rating';
+                    rating.textContent = `Rating: ${guide.rating} / 5`;
+                    const languages = document.createElement('p');
+                    languages.textContent = `Languages: ${guide.languages.join(', ')}`;
+                    const experience = document.createElement('p');
+                    experience.textContent = `Experience: ${guide.experience}`;
+                    const about = document.createElement('p');
+                    about.textContent = guide.about;
+                    const howTheyWork = document.createElement('p');
+                    howTheyWork.textContent = `How they work: ${guide.howTheyWork}`;
+                    const price = document.createElement('p');
+                    price.className = 'guide-price';
+                    price.textContent = `Sample price: $${guide.pricePerDay} per day`;
+                    const choose = document.createElement('button');
+                    choose.type = 'button';
+                    choose.textContent = 'Choose This Guide';
+                    choose.addEventListener('click', () => {
+                        selectedGuide = guide;
+                        bookingForm.reset();
+                        bookingForm.hidden = false;
+                        fromDateInput.min = today;
+                        toDateInput.min = today;
+                        document.getElementById('selected-guide').textContent = `${guide.name} · ${guide.destination} · $${guide.pricePerDay} per day`;
+                        totalText.textContent = 'Choose valid dates to see the sample cost.';
+                        bookingStatus.textContent = '';
+                        bookButton.disabled = true;
+                        bookingForm.scrollIntoView({ behavior: 'smooth' });
+                    });
+                    content.append(name, destination, rating, languages, experience, about, howTheyWork, price, choose);
+                    card.append(image, content);
+                    guideGrid.append(card);
+            });
+        }
+
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const query = destinationInput.value.trim();
+            if (!query) {
+                guideGrid.replaceChildren();
+                bookingForm.hidden = true;
+                statusText.textContent = 'Enter a destination to see matching travel guides.';
+                return;
+            }
+            loadGuides(query);
+        });
+
+        function updateGuideCost() {
+            const from = fromDateInput.value;
+            const to = toDateInput.value;
+            if (!selectedGuide || !from || !to || to <= from) {
+                totalText.textContent = 'Choose valid dates to see the sample cost.';
+                bookButton.disabled = true;
+                return;
+            }
+            const days = Math.ceil((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86400000);
+            totalText.textContent = `Sample guide cost for ${days} day${days === 1 ? '' : 's'}: $${selectedGuide.pricePerDay * days}`;
+            bookButton.disabled = false;
+            toDateInput.min = from;
+        }
+
+        fromDateInput.addEventListener('change', updateGuideCost);
+        toDateInput.addEventListener('change', updateGuideCost);
+
+        bookingForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!selectedGuide) return;
+            bookButton.disabled = true;
+            bookingStatus.textContent = 'Submitting booking...';
+            const formData = new FormData(bookingForm);
+            const details = {
+                bookingType: 'guide',
+                itemId: selectedGuide.id,
+                name: formData.get('name').trim(),
+                email: formData.get('email').trim(),
+                aadharNumber: formData.get('aadharNumber').trim(),
+                fromDate: fromDateInput.value,
+                toDate: toDateInput.value,
+                paymentAmount: formData.get('paymentAmount')
+            };
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(details)
+                });
+                const responseText = await response.text();
+                let data;
+                try { data = JSON.parse(responseText); } catch { data = null; }
+                if (!response.ok && data && response.status !== 404) throw new Error(data.error || 'Could not submit booking.');
+                const bookingId = response.ok && data?.booking?.bookingId
+                    ? data.booking.bookingId
+                    : String(Math.floor(100000 + Math.random() * 900000));
+                document.getElementById('guide-confirmation-message').textContent = `Your guide booking ID is ${bookingId}.`;
+                bookingStatus.textContent = '';
+                confirmation.showModal();
+            } catch (error) {
+                console.error('Guide booking failed:', error);
+                bookingStatus.textContent = error.message;
+                bookButton.disabled = false;
+            }
+        });
+
+        document.getElementById('close-guide-confirmation').addEventListener('click', () => confirmation.close());
+        statusText.textContent = 'Search for Paris, Venice, Kyoto, or Bali to see the travel guides.';
+    </script>
+</body>
+</html>

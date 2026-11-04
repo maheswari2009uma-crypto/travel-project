@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popular Hotels - Pacific</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        [hidden] { display: none !important; }
+        .hotels-page { max-width: 1200px; margin: 50px auto; padding: 24px; }
+        .hotel-search, .hotel-booking { display: grid; gap: 16px; margin: 24px 0; padding: 24px; background: #fff; border-radius: 10px; box-shadow: 0 4px 18px #00000014; }
+        .hotel-search { grid-template-columns: 1fr auto; }
+        .hotel-search label, .hotel-booking label { display: grid; gap: 7px; }
+        .hotel-search input, .hotel-booking input, .hotel-booking select { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #ccc; border-radius: 5px; font: inherit; background: #fff; }
+        .hotel-search button, .hotel-card button, .hotel-booking button, .hotel-confirmation button { min-height: 44px; padding: 10px 20px; border: 0; border-radius: 5px; background: #f15d30; color: #fff; font: inherit; cursor: pointer; }
+        .hotel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .hotel-card { overflow: hidden; background: #fff; border-radius: 10px; box-shadow: 0 4px 18px #00000018; }
+        .hotel-card img { width: 100%; height: 240px; object-fit: cover; }
+        .hotel-card-content { padding: 20px; }
+        .hotel-card-content h2 { margin-bottom: 8px; }
+        .hotel-card-content p { margin: 8px 0; color: #666; }
+        .hotel-price { color: #f15d30 !important; font-weight: bold; }
+        .room-details { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 28px; margin: 35px 0; padding: 24px; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 4px 18px #00000014; }
+        .room-details img { width: 100%; height: 360px; object-fit: cover; border-radius: 8px; }
+        .room-details p { margin: 10px 0; color: #666; }
+        .room-details ul { padding-left: 22px; line-height: 1.9; }
+        .room-price { color: #f15d30 !important; font-size: 20px; font-weight: bold; }
+        .hotel-booking { grid-template-columns: 1fr 1fr; }
+        .hotel-booking h2, .hotel-booking .full-width { grid-column: 1 / -1; }
+        .hotel-summary { padding: 14px; background: #f7f7f7; border-radius: 6px; }
+        .hotel-status { min-height: 24px; margin: 12px 0; color: #555; }
+        .hotel-booking button:disabled { opacity: .6; cursor: wait; }
+        .hotel-confirmation { width: min(90%, 460px); margin: auto; padding: 30px; border: 0; border-radius: 10px; text-align: center; }
+        .hotel-confirmation::backdrop { background: #0008; }
+        .hotel-confirmation h2 { color: #18864b; }
+        @media (max-width: 850px) { .hotel-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 650px) { .hotel-grid, .hotel-search, .room-details, .hotel-booking { grid-template-columns: 1fr; } .hotel-booking h2, .hotel-booking .full-width { grid-column: auto; } }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Pacific</div>
+        <nav>
+            <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+            <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="places.html" target="_blank" rel="noopener noreferrer">Places</a>
+            <a href="hotels.html" target="_blank" rel="noopener noreferrer">Hotels</a>
+            <a href="blog.html" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="contact.html" target="_blank" rel="noopener noreferrer">Contact</a>
+        </nav>
+    </header>
+
+    <main class="hotels-page">
+        <p class="section-title">HOTELS</p>
+        <h1>Popular Hotels</h1>
+        <p>Choose a hotel to see its room details, facilities, and sample booking cost.</p>
+
+        <form id="hotel-search" class="hotel-search">
+            <label for="hotel-query">Search by hotel or destination
+                <input id="hotel-query" type="search" placeholder="For example, Paris or Bali" autocomplete="off">
+            </label>
+            <button type="submit">Search Hotels</button>
+        </form>
+
+        <p id="hotel-status" class="hotel-status" role="status" aria-live="polite">Loading hotels...</p>
+        <section id="hotel-grid" class="hotel-grid" aria-label="Popular hotels"></section>
+
+        <section id="room-details" class="room-details" hidden>
+            <img id="room-image" src="" alt="Selected hotel room">
+            <div>
+                <p class="section-title">ROOM DETAILS</p>
+                <h2 id="room-title"></h2>
+                <p id="room-description"></p>
+                <p id="room-count"></p>
+                <h3>Room facilities</h3>
+                <ul id="room-facilities"></ul>
+                <p id="room-price" class="room-price"></p>
+                <button id="book-this-room" type="button" class="btn">Book This Room</button>
+            </div>
+        </section>
+
+        <form id="hotel-booking" class="hotel-booking" hidden>
+            <h2>Enter Your Hotel Booking Details</h2>
+            <div id="selected-hotel" class="hotel-summary full-width"></div>
+            <label>Check-in date
+                <input id="checkin-date" type="date" required>
+            </label>
+            <label>Check-out date
+                <input id="checkout-date" type="date" required>
+            </label>
+            <label>Number of rooms
+                <input id="room-count-input" name="roomCount" type="number" min="1" value="1" required>
+            </label>
+            <p id="hotel-total" class="hotel-summary full-width">Choose dates and rooms to see the sample total.</p>
+            <label>Full name
+                <input name="name" type="text" maxlength="100" required>
+            </label>
+            <label>Email
+                <input name="email" type="email" maxlength="254" required>
+            </label>
+            <label>Aadhaar number (12 digits)
+                <input name="aadharNumber" type="text" inputmode="numeric" pattern="[0-9]{12}" minlength="12" maxlength="12" placeholder="Enter any 12 digits" required>
+            </label>
+            <label>Payment amount (demo only)
+                <input name="paymentAmount" type="number" min="0" step="any" placeholder="Enter an amount" required>
+            </label>
+            <button id="hotel-book-button" class="full-width" type="submit" disabled>Book Now</button>
+            <p id="hotel-booking-status" class="hotel-status full-width" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <dialog id="hotel-confirmation" class="hotel-confirmation">
+        <h2>Booking confirmed!</h2>
+        <p id="hotel-confirmation-message"></p>
+        <button id="close-hotel-confirmation" type="button">Close</button>
+    </dialog>
+
+    <script>
+        const searchForm = document.getElementById('hotel-search');
+        const queryInput = document.getElementById('hotel-query');
+        const statusText = document.getElementById('hotel-status');
+        const hotelGrid = document.getElementById('hotel-grid');
+        const roomDetails = document.getElementById('room-details');
+        const bookingForm = document.getElementById('hotel-booking');
+        const checkinInput = document.getElementById('checkin-date');
+        const checkoutInput = document.getElementById('checkout-date');
+        const roomCountInput = document.getElementById('room-count-input');
+        const totalText = document.getElementById('hotel-total');
+        const bookButton = document.getElementById('hotel-book-button');
+        const bookingStatus = document.getElementById('hotel-booking-status');
+        const confirmation = document.getElementById('hotel-confirmation');
+        let selectedHotel = null;
+        const localSampleHotels = [
+            { id: 'luxury-beach-resort', name: 'Luxury Beach Resort', country: 'Maldives', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80', roomImage: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1000&q=80', roomType: 'Beach Villa', description: 'A sample beach villa with a private outdoor view.', availableRooms: 20, perNight: 180, facilities: ['Balcony: Available (private balcony)', 'One king-size bed', 'Private washroom', 'Air conditioning (AC)', 'Ceiling fan', 'Television (TV)', 'Table and chairs', 'Wi-Fi'] },
+            { id: 'grand-palace-paris', name: 'Grand Palace Hotel', country: 'Paris, France', image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80', roomImage: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1000&q=80', roomType: 'Classic Double Room', description: 'A sample double room close to central Paris attractions.', availableRooms: 45, perNight: 220, facilities: ['Balcony: Not available', 'One double bed', 'Private washroom', 'Air conditioning (AC)', 'Fan', 'Television (TV)', 'Table and chairs', 'Wi-Fi'] },
+            { id: 'ocean-view-bali', name: 'Ocean View Hotel', country: 'Bali, Indonesia', image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80', roomImage: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1000&q=80', roomType: 'Deluxe Ocean View Room', description: 'A sample room near Bali’s coast with ocean views.', availableRooms: 32, perNight: 150, facilities: ['Balcony: Available (private balcony)', 'One king-size bed', 'Private washroom', 'Air conditioning (AC)', 'Ceiling fan', 'Television (TV)', 'Table and chairs', 'Wi-Fi'] }
+        ];
+        const today = new Date().toISOString().slice(0, 10);
+        checkinInput.min = today;
+        checkoutInput.min = today;
+
+        async function loadHotels(query = '') {
+            statusText.textContent = 'Searching hotels...';
+            hotelGrid.replaceChildren();
+            roomDetails.hidden = true;
+            bookingForm.hidden = true;
+            selectedHotel = null;
+            let data;
+            let showingLocalSamples = false;
+            try {
+                const url = new URL('/api/hotels', window.location.origin);
+                if (query) url.searchParams.set('q', query);
+                const response = await fetch(url, { headers: { Accept: 'application/json' } });
+                const raw = await response.text();
+                try { data = JSON.parse(raw); }
+                catch { throw new Error(`Server returned a non-JSON response (HTTP ${response.status}).`); }
+                if (!response.ok) throw new Error(data.error || `Request failed (HTTP ${response.status}).`);
+            } catch (error) {
+                console.error('Hotel API unavailable; using local sample hotels:', error);
+                const normalizedQuery = query.toLowerCase();
+                data = { results: localSampleHotels.filter((hotel) =>
+                    `${hotel.name} ${hotel.country}`.toLowerCase().includes(normalizedQuery)
+                ) };
+                showingLocalSamples = true;
+            }
+
+            if (!Array.isArray(data.results) || data.results.length === 0) {
+                statusText.textContent = `No hotels found for "${query}". Try Paris, Bali, or Maldives.`;
+                return;
+            }
+
+            statusText.textContent = `${showingLocalSamples ? 'Showing sample hotels (server API unavailable). ' : ''}Found ${data.results.length} hotel${data.results.length === 1 ? '' : 's'}. Select a photo to see room details:`;
+            data.results.forEach((hotel) => {
+                    const card = document.createElement('article');
+                    card.className = 'hotel-card';
+                    const image = document.createElement('img');
+                    image.src = hotel.image;
+                    image.alt = hotel.name;
+                    image.loading = 'lazy';
+                    image.onerror = () => { image.onerror = null; image.src = localSampleHotels.find((sample) => sample.id === hotel.id)?.image || ''; };
+                    image.tabIndex = 0;
+                    image.setAttribute('role', 'button');
+                    image.setAttribute('aria-label', `View room details for ${hotel.name}`);
+                    image.style.cursor = 'pointer';
+                    image.addEventListener('click', () => showHotel(hotel));
+                    image.addEventListener('keydown', (event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            showHotel(hotel);
+                        }
+                    });
+                    const content = document.createElement('div');
+                    content.className = 'hotel-card-content';
+                    const title = document.createElement('h2');
+                    title.textContent = hotel.name;
+                    const location = document.createElement('p');
+                    location.textContent = hotel.country;
+                    const price = document.createElement('p');
+                    price.className = 'hotel-price';
+                    price.textContent = `Sample price: $${hotel.perNight} per night`;
+                    const choose = document.createElement('button');
+                    choose.type = 'button';
+                    choose.textContent = 'View Room Details';
+                    choose.addEventListener('click', () => showHotel(hotel));
+                    content.append(title, location, price, choose);
+                    card.append(image, content);
+                    hotelGrid.append(card);
+            });
+        }
+
+        function showHotel(hotel) {
+            selectedHotel = hotel;
+            bookingForm.hidden = true;
+            roomDetails.hidden = false;
+            const roomImage = document.getElementById('room-image');
+            roomImage.src = hotel.roomImage || hotel.image;
+            roomImage.alt = `${hotel.roomType || 'Room'} at ${hotel.name}`;
+            roomImage.onerror = () => { roomImage.onerror = null; roomImage.src = hotel.image; };
+            document.getElementById('room-title').textContent = `${hotel.name} — ${hotel.roomType || 'Guest room'}`;
+            document.getElementById('room-description').textContent = hotel.description;
+            document.getElementById('room-count').textContent = `Available rooms: ${hotel.availableRooms}`;
+            document.getElementById('room-price').textContent = `Sample price: $${hotel.perNight} per room per night`;
+            const facilities = document.getElementById('room-facilities');
+            facilities.replaceChildren();
+            (Array.isArray(hotel.facilities) ? hotel.facilities : ['Bed', 'Private bathroom', 'Air conditioning', 'Fan', 'Television']).forEach((facility) => {
+                const item = document.createElement('li');
+                item.textContent = facility;
+                facilities.append(item);
+            });
+            roomCountInput.max = hotel.availableRooms;
+            roomDetails.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const query = queryInput.value.trim();
+            if (!query) {
+                statusText.textContent = 'Enter a hotel name or destination, such as Paris or Bali.';
+                return;
+            }
+            loadHotels(query);
+        });
+
+        document.getElementById('book-this-room').addEventListener('click', () => {
+            if (!selectedHotel) return;
+            bookingForm.reset();
+            bookingForm.hidden = false;
+            roomCountInput.max = selectedHotel.availableRooms;
+            checkinInput.min = today;
+            checkoutInput.min = today;
+            document.getElementById('selected-hotel').textContent = `${selectedHotel.name} · ${selectedHotel.roomType} · $${selectedHotel.perNight} per room per night`;
+            totalText.textContent = 'Choose dates and rooms to see the sample total.';
+            bookingStatus.textContent = '';
+            bookButton.disabled = true;
+            bookingForm.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        function updateHotelTotal() {
+            const checkin = checkinInput.value;
+            const checkout = checkoutInput.value;
+            const rooms = Number(roomCountInput.value);
+            if (!selectedHotel || !checkin || !checkout || checkout <= checkin || !Number.isInteger(rooms) || rooms < 1 || rooms > selectedHotel.availableRooms) {
+                totalText.textContent = `Choose valid dates and 1–${selectedHotel ? selectedHotel.availableRooms : 'available'} rooms.`;
+                bookButton.disabled = true;
+                return;
+            }
+            const nights = Math.ceil((Date.parse(`${checkout}T00:00:00Z`) - Date.parse(`${checkin}T00:00:00Z`)) / 86400000);
+            totalText.textContent = `Sample total: $${selectedHotel.perNight} × ${nights} night${nights === 1 ? '' : 's'} × ${rooms} room${rooms === 1 ? '' : 's'} = $${selectedHotel.perNight * nights * rooms}`;
+            bookButton.disabled = false;
+            checkoutInput.min = checkin;
+        }
+        checkinInput.addEventListener('change', updateHotelTotal);
+        checkoutInput.addEventListener('change', updateHotelTotal);
+        roomCountInput.addEventListener('input', updateHotelTotal);
+
+        bookingForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!selectedHotel) return;
+            bookButton.disabled = true;
+            bookingStatus.textContent = 'Submitting booking...';
+            const formData = new FormData(bookingForm);
+            const details = {
+                bookingType: 'hotel',
+                itemId: selectedHotel.id,
+                name: formData.get('name').trim(),
+                email: formData.get('email').trim(),
+                aadharNumber: formData.get('aadharNumber').trim(),
+                fromDate: checkinInput.value,
+                toDate: checkoutInput.value,
+                paymentAmount: formData.get('paymentAmount'),
+                roomCount: formData.get('roomCount')
+            };
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(details)
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Could not submit booking.');
+                document.getElementById('hotel-confirmation-message').textContent = `Your hotel booking ID is ${data.booking.bookingId}.`;
+                bookingStatus.textContent = '';
+                confirmation.showModal();
+            } catch (error) {
+                console.error('Hotel booking failed:', error);
+                bookingStatus.textContent = error.message;
+                bookButton.disabled = false;
+            }
+        });
+
+        document.getElementById('close-hotel-confirmation').addEventListener('click', () => confirmation.close());
+
+        if (window.location.protocol === 'file:') {
+            statusText.textContent = 'Open this page through the running server (localhost) to load hotels and bookings.';
+            searchForm.querySelector('button').disabled = true;
+        } else {
+            loadHotels();
+        }
+    </script>
+</body>
+</html>

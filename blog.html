@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Pacific</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .blog-story { margin-top: 12px; color: #666; line-height: 1.7; }
+        .blog-story summary { color: #f15d30; cursor: pointer; font-weight: 600; list-style: none; }
+        .blog-story summary::-webkit-details-marker { display: none; }
+        .blog-story summary::after { content: ' →'; }
+        .blog-story[open] summary::after { content: ' ↑'; }
+        .blog-story p { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Pacific</div>
+        <nav>
+            <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+            <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="places.html" target="_blank" rel="noopener noreferrer">Places</a>
+            <a href="hotels.html" target="_blank" rel="noopener noreferrer">Hotels</a>
+            <a href="blog.html" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="contact.html" target="_blank" rel="noopener noreferrer">Contact</a>
+        </nav>
+    </header>
+
+    <section class="blog">
+        <div class="heading">
+            <p class="section-title">OUR BLOG</p>
+            <h2>Recent Travel Stories</h2>
+        </div>
+
+        <div class="blog-container">
+            <article class="blog-card">
+                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34" alt="Paris">
+                <div class="blog-content">
+                    <p>Travel • September 20, 2026</p>
+                    <h3>10 Amazing Places You Must Visit</h3>
+                    <details class="blog-story">
+                        <summary>Read More</summary>
+                        <p>Plan a Paris trip with Pacific: search Paris to explore the destination, then visit the Eiffel Tower, the Louvre, and the Arc de Triomphe. Check each attraction’s current opening details before you travel. The sample attraction costs on this site are for planning practice, not live ticket prices.</p>
+                    </details>
+                </div>
+            </article>
+            <article class="blog-card">
+                <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf" alt="Tokyo">
+                <div class="blog-content">
+                    <p>Travel • September 15, 2026</p>
+                    <h3>A Wonderful Journey Through Japan</h3>
+                    <details class="blog-story">
+                        <summary>Read More</summary>
+                        <p>Use Pacific to plan a Japan journey. Search Kyoto or Tokyo, then explore Kyoto’s temples and gardens or Tokyo’s lively neighborhoods. Choose the places that interest you and check travel times and current entry details as you build your itinerary.</p>
+                    </details>
+                </div>
+            </article>
+            <article class="blog-card">
+                <img src="https://images.unsplash.com/photo-1530789253388-582c481c54b0" alt="Travel">
+                <div class="blog-content">
+                    <p>Travel • September 10, 2026</p>
+                    <h3>How To Plan Your Perfect Vacation</h3>
+                    <details class="blog-story">
+                        <summary>Read More</summary>
+                        <p>Start by searching for a destination in Pacific. Compare the places and hotels shown, choose a few nearby attractions, and plan them in a sensible order. Check your dates, transport, hotel facilities, and local costs before your trip.</p>
+                    </details>
+                </div>
+            </article>
+        </div>
+    </section>
+</body>
+</html>

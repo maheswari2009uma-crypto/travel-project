@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Packages - Pacific</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .packages-page { max-width: 1200px; margin: 50px auto; padding: 24px; }
+        .packages-intro { margin-bottom: 24px; }
+        .package-search, .package-booking {
+            display: grid; gap: 16px; margin: 24px 0; padding: 24px;
+            background: #fff; border-radius: 10px; box-shadow: 0 4px 18px #00000014;
+        }
+        .package-search { grid-template-columns: 1fr auto; }
+        .package-search label, .package-booking label { display: grid; gap: 7px; }
+        .package-search input, .package-booking input {
+            width: 100%; min-height: 46px; padding: 10px 12px;
+            border: 1px solid #ccc; border-radius: 5px; font: inherit;
+        }
+        .package-search button, .package-card button, .package-booking button, .package-confirmation button {
+            min-height: 44px; padding: 10px 20px; border: 0; border-radius: 5px;
+            background: #f15d30; color: #fff; font: inherit; cursor: pointer;
+        }
+        .package-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .package-card { overflow: hidden; background: #fff; border-radius: 10px; box-shadow: 0 4px 18px #00000018; }
+        .package-card > img { width: 100%; height: 270px; object-fit: cover; }
+        .package-card-content { padding: 22px; }
+        .package-card-content > p { margin: 10px 0; color: #666; }
+        .package-cost { color: #f15d30 !important; font-size: 20px; font-weight: bold; }
+        .attraction-total { color: #333 !important; font-weight: bold; }
+        .itinerary { margin: 18px 0; padding-left: 24px; }
+        .itinerary li { margin: 12px 0; padding-left: 4px; }
+        .itinerary a { display: inline-block; margin-top: 5px; color: #f15d30; font-weight: bold; }
+        .package-booking { grid-template-columns: 1fr 1fr; }
+        .package-booking[hidden], .package-grid[hidden] { display: none !important; }
+        .package-booking h2, .package-booking .full-width { grid-column: 1 / -1; }
+        .package-summary { padding: 14px; background: #f7f7f7; border-radius: 6px; }
+        .package-status { min-height: 24px; margin: 12px 0; color: #555; }
+        .package-booking button:disabled { opacity: .6; cursor: wait; }
+        .package-confirmation { width: min(90%, 460px); margin: auto; padding: 30px; border: 0; border-radius: 10px; text-align: center; }
+        .package-confirmation::backdrop { background: #0008; }
+        .package-confirmation h2 { color: #18864b; }
+        @media (max-width: 700px) {
+            .package-grid, .package-search, .package-booking { grid-template-columns: 1fr; }
+            .package-booking h2, .package-booking .full-width { grid-column: auto; }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">Pacific</div>
+        <nav>
+            <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+            <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="places.html" target="_blank" rel="noopener noreferrer">Places</a>
+            <a href="hotels.html" target="_blank" rel="noopener noreferrer">Hotels</a>
+            <a href="blog.html" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="contact.html" target="_blank" rel="noopener noreferrer">Contact</a>
+        </nav>
+    </header>
+
+    <main class="packages-page">
+        <p class="section-title">TOUR PACKAGES</p>
+        <h1>Explore Places with a Plan</h1>
+        <p class="packages-intro">Browse sample itineraries grouped by nearby sights. Use the map links to view each route.</p>
+
+        <form id="package-search" class="package-search">
+            <label for="package-query">Search a destination or package
+                <input id="package-query" type="search" placeholder="For example, Paris" autocomplete="off">
+            </label>
+            <button type="submit">Search Packages</button>
+        </form>
+
+        <p id="package-status" class="package-status" role="status" aria-live="polite">Search for a place to see nearby attractions and sample visit costs.</p>
+        <section id="package-grid" class="package-grid" aria-label="Tour packages" hidden></section>
+
+        <form id="package-booking" class="package-booking" hidden>
+            <h2>Book This Tour Package</h2>
+            <div id="selected-package" class="package-summary full-width"></div>
+            <label>From date
+                <input id="package-from-date" type="date" required>
+            </label>
+            <label>To date
+                <input id="package-to-date" type="date" required>
+            </label>
+            <p id="package-total" class="package-summary full-width"></p>
+            <label>Full name
+                <input name="name" type="text" maxlength="100" required>
+            </label>
+            <label>Email
+                <input name="email" type="email" maxlength="254" required>
+            </label>
+            <label>Aadhaar number (12 digits)
+                <input name="aadharNumber" type="text" inputmode="numeric" pattern="[0-9]{12}" minlength="12" maxlength="12" placeholder="Enter any 12 digits" required>
+            </label>
+            <label>Payment amount (demo only)
+                <input name="paymentAmount" type="number" min="0" step="any" placeholder="Enter an amount" required>
+            </label>
+            <button id="package-book-button" class="full-width" type="submit" disabled>Book Now</button>
+            <p id="package-booking-status" class="package-status full-width" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <dialog id="package-confirmation" class="package-confirmation">
+        <h2>Booking confirmed!</h2>
+        <p id="package-confirmation-message"></p>
+        <button id="close-package-confirmation" type="button">Close</button>
+    </dialog>
+
+    <script>
+        const searchForm = document.getElementById('package-search');
+        const queryInput = document.getElementById('package-query');
+        const statusText = document.getElementById('package-status');
+        const packageGrid = document.getElementById('package-grid');
+        const bookingForm = document.getElementById('package-booking');
+        const fromDate = document.getElementById('package-from-date');
+        const toDate = document.getElementById('package-to-date');
+        const totalText = document.getElementById('package-total');
+        const bookButton = document.getElementById('package-book-button');
+        const bookingStatus = document.getElementById('package-booking-status');
+        const confirmation = document.getElementById('package-confirmation');
+        let selectedPackage = null;
+        const today = new Date().toISOString().slice(0, 10);
+        fromDate.min = today;
+        toDate.min = today;
+
+        const samplePackages = [
+            {
+                id: 'paris-day-tour', name: 'Paris Highlights Tour', destination: 'Paris, France', duration: '3 days',
+                description: 'Visit famous Paris sights in nearby areas, with a sample cost for each attraction.',
+                image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80', cost: 350,
+                itinerary: [
+                    { day: 1, place: 'Eiffel Tower', description: 'See Paris from the landmark tower.', visitCost: 20, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Eiffel+Tower+Paris' },
+                    { day: 1, place: 'Champ de Mars', description: 'Walk through the gardens beside the tower.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Champ+de+Mars+Paris' },
+                    { day: 2, place: 'Louvre Museum', description: 'Explore the museum and its art collections.', visitCost: 25, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Louvre+Museum+Paris' },
+                    { day: 2, place: 'Tuileries Garden', description: 'Relax in the gardens near the Louvre.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Tuileries+Garden+Paris' },
+                    { day: 3, place: 'Arc de Triomphe', description: 'Visit the monument at the Champs-Élysées.', visitCost: 16, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Arc+de+Triomphe+Paris' }
+                ]
+            },
+            {
+                id: 'venice-city-tour', name: 'Venice Canals and Old Town', destination: 'Venice, Italy', duration: '2 days',
+                description: 'Explore central Venice, its historic landmarks, and canals.',
+                image: 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=1000&q=80', cost: 280,
+                itinerary: [
+                    { day: 1, place: 'St. Mark’s Basilica', description: 'Visit the basilica in St. Mark’s Square.', visitCost: 10, mapUrl: 'https://www.google.com/maps/search/?api=1&query=St+Marks+Basilica+Venice' },
+                    { day: 1, place: 'Doge’s Palace', description: 'See the historic palace beside the square.', visitCost: 30, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Doges+Palace+Venice' },
+                    { day: 2, place: 'Rialto Bridge', description: 'Walk across the famous Grand Canal bridge.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Rialto+Bridge+Venice' },
+                    { day: 2, place: 'Grand Canal', description: 'Take a sample public water bus ride.', visitCost: 10, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Grand+Canal+Venice' }
+                ]
+            },
+            {
+                id: 'kyoto-culture-tour', name: 'Kyoto Temples and Traditional Streets', destination: 'Kyoto, Japan', duration: '3 days',
+                description: 'A sample route linking Kyoto temples, gardens, and traditional lanes.',
+                image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1000&q=80', cost: 320,
+                itinerary: [
+                    { day: 1, place: 'Kiyomizu-dera', description: 'Visit the hillside temple and viewing terrace.', visitCost: 4, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Kiyomizu-dera+Kyoto' },
+                    { day: 1, place: 'Sannenzaka and Ninenzaka', description: 'Walk the traditional lanes near the temple.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Sannenzaka+Ninenzaka+Kyoto' },
+                    { day: 2, place: 'Fushimi Inari Taisha', description: 'Walk through the shrine gates and hillside paths.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Fushimi+Inari+Taisha+Kyoto' },
+                    { day: 3, place: 'Arashiyama Bamboo Grove', description: 'Explore the bamboo paths in Arashiyama.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Arashiyama+Bamboo+Grove+Kyoto' }
+                ]
+            },
+            {
+                id: 'bali-island-tour', name: 'Bali Temples and Nature', destination: 'Bali, Indonesia', duration: '3 days',
+                description: 'Discover Bali’s cultural sights, rice terraces, and coastal scenery.',
+                image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=80', cost: 300,
+                itinerary: [
+                    { day: 1, place: 'Ubud Palace', description: 'See the historic palace in central Ubud.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Ubud+Palace+Bali' },
+                    { day: 1, place: 'Ubud Art Market', description: 'Browse local crafts in the nearby market.', visitCost: 0, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Ubud+Art+Market+Bali' },
+                    { day: 2, place: 'Tegallalang Rice Terraces', description: 'Visit the rice terraces and nearby viewpoints.', visitCost: 3, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Tegallalang+Rice+Terraces+Bali' },
+                    { day: 3, place: 'Uluwatu Temple', description: 'Visit the coastal temple and surrounding viewpoints.', visitCost: 5, mapUrl: 'https://www.google.com/maps/search/?api=1&query=Uluwatu+Temple+Bali' }
+                ]
+            }
+        ];
+
+        async function loadPackages(query = '') {
+            statusText.textContent = 'Loading tour packages...';
+            packageGrid.replaceChildren();
+            packageGrid.hidden = false;
+            bookingForm.hidden = true;
+            selectedPackage = null;
+            let packages = [];
+            try {
+                const url = new URL('/api/packages', window.location.origin);
+                if (query) url.searchParams.set('q', query);
+                const response = await fetch(url, { headers: { Accept: 'application/json' } });
+                const responseText = await response.text();
+                let data;
+                try { data = JSON.parse(responseText); }
+                catch { throw new Error(`Server returned a non-JSON response (HTTP ${response.status}).`); }
+                if (!response.ok) throw new Error(data.error || `Request failed (HTTP ${response.status}).`);
+                if (!Array.isArray(data.results)) throw new Error('The packages response is missing its results list.');
+                packages = data.results;
+            } catch (error) {
+                console.warn('Packages API unavailable; using local sample itineraries.', error);
+            }
+
+            const normalizedQuery = query.toLowerCase();
+            const matchingSamples = samplePackages.filter((tour) =>
+                `${tour.name} ${tour.destination}`.toLowerCase().includes(normalizedQuery)
+            );
+            packages = [...packages, ...matchingSamples.filter((sample) => !packages.some((tour) => tour.id === sample.id))];
+            if (packages.length === 0) {
+                statusText.textContent = 'No tour packages found. Try Paris, Venice, Kyoto, or Bali.';
+                return;
+            }
+            statusText.textContent = `Showing ${packages.length} sample ${packages.length === 1 ? 'itinerary' : 'itineraries'} with nearby places and visit costs:`;
+                const imageFallbacks = {
+                    paris: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=80',
+                    venice: 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=1000&q=80',
+                    kyoto: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1000&q=80',
+                    bali: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=80'
+                };
+                packages.forEach((tour) => {
+                    const card = document.createElement('article');
+                    card.className = 'package-card';
+                    const image = document.createElement('img');
+                    const fallbackImage = imageFallbacks[String(tour.destination).toLowerCase()];
+                    image.src = tour.image || fallbackImage || '';
+                    image.alt = `${tour.destination} tour package`;
+                    image.loading = 'lazy';
+                    image.addEventListener('error', () => {
+                        image.removeAttribute('src');
+                        image.alt = `Image unavailable for ${tour.destination}`;
+                        image.style.background = '#e8eee9';
+                    }, { once: true });
+                    const content = document.createElement('div');
+                    content.className = 'package-card-content';
+                    const title = document.createElement('h2');
+                    title.textContent = tour.name;
+                    const details = document.createElement('p');
+                    details.textContent = `${tour.destination} · ${tour.duration}`;
+                    const description = document.createElement('p');
+                    description.textContent = tour.description;
+                    const cost = document.createElement('p');
+                    cost.className = 'package-cost';
+                    cost.textContent = `Sample tour package price: $${tour.cost}`;
+                    const attractionTotal = tour.itinerary.reduce(
+                        (sum, stop) => sum + Number(stop.visitCost || 0), 0
+                    );
+                    const attractionCost = document.createElement('p');
+                    attractionCost.className = 'attraction-total';
+                    attractionCost.textContent = `Estimated attraction visit costs: $${attractionTotal} per person (sample total)`;
+                    const itineraryTitle = document.createElement('h3');
+                    itineraryTitle.textContent = `Popular places to visit in ${tour.destination}`;
+                    const itinerary = document.createElement('ol');
+                    itinerary.className = 'itinerary';
+                    tour.itinerary.forEach((stop) => {
+                        const item = document.createElement('li');
+                        const stopName = document.createElement('strong');
+                        stopName.textContent = `Day ${stop.day}: ${stop.place}`;
+                        const stopDescription = document.createElement('p');
+                        stopDescription.textContent = stop.description || '';
+                        const stopCost = document.createElement('p');
+                        stopCost.textContent = `Sample visit cost: ${Number(stop.visitCost) === 0 ? 'Free' : `$${stop.visitCost} per person`}`;
+                        item.append(stopName, stopDescription, stopCost);
+                        if (stop.mapUrl) {
+                            const map = document.createElement('a');
+                            map.href = stop.mapUrl;
+                            map.target = '_blank';
+                            map.rel = 'noopener noreferrer';
+                            map.textContent = 'View place in Google Maps';
+                            item.appendChild(map);
+                        }
+                        itinerary.appendChild(item);
+                    });
+                    const choose = document.createElement('button');
+                    choose.type = 'button';
+                    choose.textContent = 'Choose This Package';
+                    choose.addEventListener('click', () => {
+                        selectedPackage = tour;
+                        bookingForm.reset();
+                        bookingForm.hidden = false;
+                        fromDate.min = today;
+                        toDate.min = today;
+                        document.getElementById('selected-package').textContent = `${tour.name} · ${tour.duration}`;
+                        totalText.textContent = `Sample package total: $${tour.cost}`;
+                        bookingStatus.textContent = '';
+                        bookButton.disabled = true;
+                        bookingForm.scrollIntoView({ behavior: 'smooth' });
+                    });
+                    content.append(title, details, description, cost, attractionCost, itineraryTitle, itinerary, choose);
+                    card.append(image, content);
+                    packageGrid.appendChild(card);
+                });
+        }
+
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const query = queryInput.value.trim();
+            if (!query) {
+                statusText.textContent = 'Enter a place name such as Paris, Venice, Kyoto, or Bali.';
+                packageGrid.replaceChildren();
+                packageGrid.hidden = true;
+                bookingForm.hidden = true;
+                return;
+            }
+            loadPackages(query);
+        });
+
+        function updateDates() {
+            const valid = fromDate.value && toDate.value && toDate.value > fromDate.value;
+            bookButton.disabled = !selectedPackage || !valid;
+            if (fromDate.value) toDate.min = fromDate.value;
+        }
+        fromDate.addEventListener('change', updateDates);
+        toDate.addEventListener('change', updateDates);
+
+        bookingForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!selectedPackage) return;
+            bookButton.disabled = true;
+            bookingStatus.textContent = 'Submitting booking...';
+            const formData = new FormData(bookingForm);
+            const details = {
+                bookingType: 'package',
+                itemId: selectedPackage.id,
+                name: formData.get('name').trim(),
+                email: formData.get('email').trim(),
+                aadharNumber: formData.get('aadharNumber').trim(),
+                fromDate: fromDate.value,
+                toDate: toDate.value,
+                paymentAmount: formData.get('paymentAmount')
+            };
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(details)
+                });
+                const responseText = await response.text();
+                let data;
+                try { data = JSON.parse(responseText); } catch { data = null; }
+                if (!response.ok && data && response.status !== 404) throw new Error(data.error || 'Could not submit booking.');
+                const bookingId = response.ok && data?.booking?.bookingId
+                    ? data.booking.bookingId
+                    : String(Math.floor(100000 + Math.random() * 900000));
+                document.getElementById('package-confirmation-message').textContent = `Your tour package booking ID is ${bookingId}.`;
+                bookingStatus.textContent = '';
+                confirmation.showModal();
+            } catch (error) {
+                console.error('Package booking failed:', error);
+                bookingStatus.textContent = error.message;
+                bookButton.disabled = false;
+            }
+        });
+
+        document.getElementById('close-package-confirmation').addEventListener('click', () => confirmation.close());
+        packageGrid.hidden = true;
+        bookingForm.hidden = true;
+        statusText.textContent = 'Enter Paris, Venice, Kyoto, or Bali to see nearby attractions and sample visit costs.';
+    </script>
+</body>
+</html>

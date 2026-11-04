@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destination Details - Pacific</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .search-results-page {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 24px;
+        }
+
+        .search-message {
+            padding: 50px 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .destination-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 36px;
+            margin-bottom: 50px;
+        }
+
+        .destination-main-image {
+            width: 100%;
+            height: 430px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .destination-type {
+            color: #777;
+            letter-spacing: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .destination-title {
+            margin: 16px 0;
+            font-size: 42px;
+        }
+
+        .destination-description {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .destination-cost {
+            margin-top: 18px;
+            color: #f15d30;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .nearby-title {
+            margin: 20px 0;
+        }
+
+        .nearby-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .nearby-card {
+            overflow: hidden;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 18px #00000018;
+        }
+
+        .nearby-card img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+        }
+
+        .nearby-card-content {
+            padding: 18px;
+        }
+
+        .nearby-card-content h3 {
+            margin-bottom: 8px;
+        }
+
+        .nearby-card-content p {
+            margin-bottom: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .nearby-cost {
+            color: #f15d30;
+            font-weight: bold;
+        }
+
+        @media (max-width: 750px) {
+            .destination-details {
+                grid-template-columns: 1fr;
+            }
+
+            .destination-main-image {
+                height: 300px;
+            }
+
+            .nearby-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .destination-title {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">Pacific</div>
+        <nav>
+            <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+            <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="places.html" target="_blank" rel="noopener noreferrer">Places</a>
+            <a href="hotels.html" target="_blank" rel="noopener noreferrer">Hotels</a>
+            <a href="blog.html" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="contact.html" target="_blank" rel="noopener noreferrer">Contact</a>
+        </nav>
+    </header>
+
+    <main class="search-results-page">
+        <p id="search-message" class="search-message">
+            Search for a place or hotel on the Home page to see its details here.
+        </p>
+
+        <div id="result-content" hidden>
+            <section class="destination-details">
+                <img id="place-image" class="destination-main-image" src="" alt="">
+
+                <div>
+                    <p id="place-type" class="destination-type"></p>
+                    <h1 id="place-title" class="destination-title"></h1>
+                    <p id="place-description" class="destination-description"></p>
+                    <p id="place-cost" class="destination-cost"></p>
+                </div>
+            </section>
+
+            <section id="nearby-section" hidden>
+                <h2 class="nearby-title">Popular places to visit nearby</h2>
+                <div id="nearby-grid" class="nearby-grid"></div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Local backup content keeps destination pages useful if the API is outdated or incomplete.
+        const destinationFallbacks = {
+            paris: {
+                name: 'Paris', country: 'France', priceFrom: 250,
+                description: 'Paris is known for its art, cafés, historic streets, and famous landmarks.',
+                image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80',
+                popularPlaces: [
+                    { name: 'Eiffel Tower', description: 'Visit the famous tower and enjoy views across Paris.', exampleCost: '$20 per person (sample cost)', image: 'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Louvre Museum', description: 'Explore a world-famous museum and its art collections.', exampleCost: '$25 per person (sample cost)', image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Arc de Triomphe', description: 'See this historic monument at the end of the Champs-Élysées.', exampleCost: '$16 per person (sample cost)', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80' }
+                ]
+            },
+            venice: {
+                name: 'Venice', country: 'Italy', priceFrom: 300,
+                description: 'Venice is known for its canals, historic palaces, bridges, and boat rides.',
+                image: 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=1200&q=80',
+                popularPlaces: [
+                    { name: 'St. Mark’s Basilica', description: 'Admire the mosaics and architecture in St. Mark’s Square.', exampleCost: 'Free entry area; ticketed areas may cost extra (sample)', image: 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Doge’s Palace', description: 'Explore the historic palace beside St. Mark’s Square.', exampleCost: '$30 per person (sample cost)', image: 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Grand Canal', description: 'See canal-side palaces and bridges by vaporetto or gondola.', exampleCost: '$10 per person by vaporetto (sample cost)', image: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80' }
+                ]
+            },
+            kyoto: {
+                name: 'Kyoto', country: 'Japan', priceFrom: 400,
+                description: 'Kyoto is known for its temples, gardens, shrines, and traditional streets.',
+                image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80',
+                popularPlaces: [
+                    { name: 'Fushimi Inari Taisha', description: 'Walk beneath the red torii gates along the mountain paths.', exampleCost: 'Free entry (sample information)', image: 'https://images.unsplash.com/photo-1478436127897-769e1b3f0f36?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Kinkaku-ji', description: 'Visit Kyoto’s Golden Pavilion and its garden.', exampleCost: '$4 per person (sample cost)', image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Arashiyama Bamboo Grove', description: 'Stroll along paths through the tall bamboo in Arashiyama.', exampleCost: 'Free entry (sample information)', image: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=800&q=80' }
+                ]
+            },
+            bali: {
+                name: 'Bali', country: 'Indonesia', priceFrom: 220,
+                description: 'Bali offers beaches, waterfalls, green landscapes, and temples to explore.',
+                image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
+                popularPlaces: [
+                    { name: 'Uluwatu Temple', description: 'Visit the clifftop temple and enjoy views over the ocean.', exampleCost: '$3 per person (sample cost; transport not included)', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Tegallalang Rice Terraces', description: 'See Bali’s green rice terraces near Ubud.', exampleCost: '$2 per person (sample cost)', image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=800&q=80' },
+                    { name: 'Tegenungan Waterfall', description: 'Walk to a popular waterfall surrounded by tropical greenery.', exampleCost: '$2 per person (sample cost)', image: 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=800&q=80' }
+                ]
+            }
+        };
+
+        async function loadSearchResult() {
+            const search = new URLSearchParams(window.location.search).get("search");
+            const message = document.getElementById("search-message");
+            const resultContent = document.getElementById("result-content");
+
+            if (!search) {
+                return;
+            }
+
+            message.textContent = "Searching...";
+
+            const fallback = destinationFallbacks[search.trim().toLowerCase()];
+            let result = null;
+            let searchUnavailable = false;
+
+            try {
+                const response = await fetch(
+                    `/api/destinations?q=${encodeURIComponent(search)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error("The server could not complete the search.");
+                }
+
+                const data = await response.json();
+                result = data.results && data.results[0];
+
+                if (!result && !fallback) {
+                    message.textContent =
+                        `No place or hotel found for "${search}". Try Paris, Venice, Kyoto, Bali, or a hotel name.`;
+                    return;
+                }
+            } catch (error) {
+                console.error(error);
+                searchUnavailable = true;
+            }
+
+            if (!result && !fallback) {
+                message.textContent = searchUnavailable
+                    ? "Could not search right now because the database is unavailable. Please try again later."
+                    : `No place or hotel found for "${search}". Try Paris, Venice, Kyoto, Bali, or a hotel name.`;
+                return;
+            }
+
+            if (searchUnavailable && fallback) {
+                message.textContent = "Showing sample destination details while the database search is unavailable.";
+            } else {
+                message.hidden = true;
+            }
+            resultContent.hidden = false;
+
+            try {
+                const place = result || { ...fallback, type: 'Place' };
+                const fallbackDescription = fallback && (!place.description || place.description.includes('More destination details'))
+                    ? fallback.description
+                    : place.description;
+                const nearbyPlaces = place.popularPlaces && place.popularPlaces.length
+                    ? place.popularPlaces
+                    : (fallback ? fallback.popularPlaces : []);
+
+                document.getElementById("place-type").textContent =
+                    `${place.type || "Destination"} · ${place.country || ""}`;
+
+                document.getElementById("place-title").textContent =
+                    place.name || fallback.name;
+
+                document.getElementById("place-description").textContent =
+                    fallbackDescription || "More destination details will be added soon.";
+
+                const costText = (place.priceFrom || fallback?.priceFrom)
+                    ? `Example trip price from $${place.priceFrom || fallback.priceFrom}`
+                    : "";
+
+                document.getElementById("place-cost").textContent = costText;
+
+                const mainImage = document.getElementById("place-image");
+                mainImage.onerror = () => {
+                    mainImage.onerror = null;
+                    if (fallback?.image) mainImage.src = fallback.image;
+                };
+                mainImage.src = place.image || fallback?.image || "";
+                mainImage.alt = place.name || fallback.name;
+
+                const nearbySection = document.getElementById("nearby-section");
+                const nearbyGrid = document.getElementById("nearby-grid");
+                nearbyGrid.replaceChildren();
+
+                if (nearbyPlaces.length > 0) {
+                    nearbySection.hidden = false;
+
+                    nearbyPlaces.forEach((nearbyPlace) => {
+                        const card = document.createElement("article");
+                        card.className = "nearby-card";
+
+                        const image = document.createElement("img");
+                        image.src = nearbyPlace.image || place.image || fallback?.image || "";
+                        image.alt = nearbyPlace.name;
+                        image.onerror = () => {
+                            image.onerror = null;
+                            if (fallback?.image) image.src = fallback.image;
+                        };
+
+                        const cardContent = document.createElement("div");
+                        cardContent.className = "nearby-card-content";
+
+                        const title = document.createElement("h3");
+                        title.textContent = nearbyPlace.name;
+
+                        const description = document.createElement("p");
+                        description.textContent =
+                            nearbyPlace.description || "Details coming soon.";
+
+                        const cost = document.createElement("p");
+                        cost.className = "nearby-cost";
+                        cost.textContent =
+                            nearbyPlace.exampleCost || "Cost details coming soon.";
+
+                        cardContent.append(title, description, cost);
+                        card.append(image, cardContent);
+                        nearbyGrid.appendChild(card);
+                    });
+                } else {
+                    nearbySection.hidden = true;
+                }
+            } catch (error) {
+                console.error(error);
+                message.hidden = false;
+                message.textContent = "Could not display this destination right now.";
+            }
+        }
+
+        loadSearchResult();
+    </script>
+</body>
+</html>
