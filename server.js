@@ -3,13 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { randomInt } = require('node:crypto');
+const path = require('node:path');
 const mongoose = require('mongoose');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB models
 const catalogItemSchema = new mongoose.Schema({
@@ -419,6 +420,38 @@ function searchCatalog(items, query, fields) {
     .map((item) => item.data);
 }
 
+let databaseReady;
+
+async function connectDatabase() {
+  if (mongoose.connection.readyState === 1) return;
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI is not configured.');
+  }
+  if (!databaseReady) {
+    databaseReady = mongoose.connect(process.env.MONGODB_URI)
+      .then(seedCatalog)
+      .catch((error) => {
+        databaseReady = undefined;
+        throw error;
+      });
+  }
+  await databaseReady;
+}
+
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    console.error('MongoDB connection failed:', error.message);
+    res.status(503).json({
+      ok: false,
+      database: 'disconnected',
+      message: 'The database is temporarily unavailable.'
+    });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({
     ok: mongoose.connection.readyState === 1,
@@ -660,16 +693,9 @@ app.post('/api/messages', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
-  if (!process.env.MONGODB_URI) {
-    console.error('MONGODB_URI is missing. Add it to the .env file beside server.js.');
-    process.exit(1);
-  }
-
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await connectDatabase();
     console.log('Connected to MongoDB Atlas');
-
-    await seedCatalog();
     console.log('Catalog data is ready in MongoDB Atlas');
 
     app.listen(PORT, () => {
@@ -677,8 +703,11 @@ async function startServer() {
     });
   } catch (error) {
     console.error('Could not start the website:', error.message);
-    process.exit(1);
   }
 }
 
-startServer();
+module.exports = app;
+
+if (require.main === module) {
+  startServer();
+}

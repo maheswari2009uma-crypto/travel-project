@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Flight - Pacific</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .flight-page {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 24px;
+        }
+
+        .flight-page h1,
+        .flight-page h2 {
+            margin-bottom: 16px;
+        }
+
+        .flight-search,
+        .booking-form {
+            display: grid;
+            gap: 16px;
+            margin: 24px 0;
+            padding: 24px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 18px #00000014;
+        }
+
+        .flight-search {
+            grid-template-columns: 1fr auto;
+        }
+
+        .flight-search input,
+        .booking-form input {
+            width: 100%;
+            min-height: 46px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font: inherit;
+        }
+
+        .flight-search button,
+        .flight-card button,
+        .booking-form button,
+        .confirmation-dialog button {
+            min-height: 44px;
+            padding: 10px 20px;
+            border: 0;
+            border-radius: 5px;
+            background: #f15d30;
+            color: white;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .flight-search button:disabled,
+        .flight-card button:disabled,
+        .booking-form button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .flight-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .flight-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 22px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .flight-card p {
+            margin: 7px 0;
+            color: #666;
+        }
+
+        .flight-fare {
+            color: #f15d30;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .booking-form {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .booking-form label {
+            display: grid;
+            gap: 7px;
+        }
+
+        .booking-form .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .booking-summary {
+            grid-column: 1 / -1;
+            padding: 14px;
+            background: #f7f7f7;
+            border-radius: 6px;
+        }
+
+        .page-status {
+            min-height: 24px;
+            margin: 12px 0;
+            color: #555;
+        }
+
+        .confirmation-dialog {
+            width: min(90%, 460px);
+            margin: auto;
+            padding: 30px;
+            border: 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .confirmation-dialog::backdrop {
+            background: #0008;
+        }
+
+        .confirmation-dialog h2 {
+            color: #18864b;
+        }
+
+        @media (max-width: 650px) {
+            .flight-search,
+            .booking-form {
+                grid-template-columns: 1fr;
+            }
+
+            .flight-card {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .booking-form .full-width,
+            .booking-summary {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="logo">Pacific</div>
+        <nav>
+            <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+            <a href="about.html" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="places.html" target="_blank" rel="noopener noreferrer">Places</a>
+            <a href="hotels.html" target="_blank" rel="noopener noreferrer">Hotels</a>
+            <a href="blog.html" target="_blank" rel="noopener noreferrer">Blog</a>
+            <a href="contact.html" target="_blank" rel="noopener noreferrer">Contact</a>
+        </nav>
+    </header>
+
+    <main class="flight-page">
+        <p class="section-title">FLIGHTS</p>
+        <h1>Choose Your Flight</h1>
+        <p>Search a destination to see sample connecting flights.</p>
+
+        <form id="flight-search" class="flight-search">
+            <label>
+                Destination
+                <input
+                    id="flight-destination"
+                    type="text"
+                    placeholder="For example, Paris"
+                    required
+                >
+            </label>
+            <button type="submit">Search Flights</button>
+        </form>
+
+        <p id="flight-status" class="page-status" role="status" aria-live="polite"></p>
+        <div id="flight-list" class="flight-list"></div>
+
+        <section id="booking-section" hidden>
+            <h2>Enter Your Booking Details</h2>
+
+            <form id="flight-booking-form" class="booking-form">
+                <div class="booking-summary full-width" id="selected-flight"></div>
+
+                <label>
+                    From date
+                    <input id="from-date" type="date" required>
+                </label>
+
+                <label>
+                    To date
+                    <input id="to-date" type="date" required>
+                </label>
+
+                <p id="flight-total" class="booking-summary full-width">
+                    Choose your travel dates to see the sample fare.
+                </p>
+
+                <label>
+                    Full name
+                    <input name="name" type="text" maxlength="100" required>
+                </label>
+
+                <label>
+                    Email
+                    <input name="email" type="email" maxlength="254" required>
+                </label>
+
+                <label>
+                    Aadhaar number (12 digits)
+                    <input
+                        name="aadharNumber"
+                        type="text"
+                        inputmode="numeric"
+                        pattern="[0-9]{12}"
+                        minlength="12"
+                        maxlength="12"
+                        placeholder="Enter any 12 digits"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Payment amount (demo only)
+                    <input
+                        name="paymentAmount"
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="Enter an amount"
+                        required
+                    >
+                </label>
+
+                <button id="book-flight-button" class="full-width" type="submit" disabled>
+                    Book Now
+                </button>
+
+                <p id="booking-status" class="page-status full-width" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+
+    <dialog id="confirmation-dialog" class="confirmation-dialog">
+        <h2>Booking confirmed!</h2>
+        <p id="confirmation-message"></p>
+        <button id="close-confirmation" type="button">Close</button>
+    </dialog>
+
+    <script>
+        const flightSearchForm = document.getElementById('flight-search');
+        const flightDestinationInput = document.getElementById('flight-destination');
+        const flightStatus = document.getElementById('flight-status');
+        const flightList = document.getElementById('flight-list');
+        const bookingSection = document.getElementById('booking-section');
+        const bookingForm = document.getElementById('flight-booking-form');
+        const bookingStatus = document.getElementById('booking-status');
+        const fromDateInput = document.getElementById('from-date');
+        const toDateInput = document.getElementById('to-date');
+        const flightTotal = document.getElementById('flight-total');
+        const bookFlightButton = document.getElementById('book-flight-button');
+        const confirmationDialog = document.getElementById('confirmation-dialog');
+
+        let selectedFlight = null;
+
+        // Local sample flights keep this demo usable when the API is unavailable.
+        const sampleFlights = [
+            { id: 'demo-paris-01', airline: 'Pacific Air', from: 'Mumbai', to: 'Paris', connection: 'Dubai', stops: 1, duration: '13h 20m', fare: 620 },
+            { id: 'demo-paris-02', airline: 'Sky Journey', from: 'Mumbai', to: 'Paris', connection: 'Doha', stops: 1, duration: '12h 45m', fare: 680 },
+            { id: 'demo-venice-01', airline: 'Pacific Air', from: 'Mumbai', to: 'Venice', connection: 'Dubai', stops: 1, duration: '12h 10m', fare: 590 },
+            { id: 'demo-kyoto-01', airline: 'Sky Journey', from: 'Mumbai', to: 'Kyoto', connection: 'Singapore', stops: 1, duration: '11h 50m', fare: 640 },
+            { id: 'demo-bali-01', airline: 'Pacific Air', from: 'Mumbai', to: 'Bali', connection: 'Singapore', stops: 1, duration: '10h 30m', fare: 410 }
+        ];
+
+        const today = new Date().toISOString().split('T')[0];
+        fromDateInput.min = today;
+        toDateInput.min = today;
+
+        flightSearchForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const query = flightDestinationInput.value.trim();
+
+            if (!query) return;
+
+            flightStatus.textContent = 'Searching flights...';
+            flightList.replaceChildren();
+            bookingSection.hidden = true;
+            selectedFlight = null;
+
+            let flights = [];
+            try {
+                const apiUrl = new URL('/api/flights', window.location.origin);
+                apiUrl.searchParams.set('q', query);
+
+                const response = await fetch(apiUrl, {
+                    headers: { Accept: 'application/json' }
+                });
+
+                const responseText = await response.text();
+                let data;
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch {
+                    throw new Error(
+                        `The server returned a non-JSON response (HTTP ${response.status}). Make sure the updated server.js is running.`
+                    );
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Could not search flights.');
+                }
+
+                if (!Array.isArray(data.results)) {
+                    throw new Error('The flight API response is missing its results list.');
+                }
+
+                flights = data.results;
+            } catch (error) {
+                console.warn('Flight API unavailable; using local sample data.', error);
+                const normalizedQuery = query.toLowerCase();
+                flights = sampleFlights.filter((flight) =>
+                    `${flight.to} ${flight.connection}`.toLowerCase().includes(normalizedQuery)
+                );
+                if (flights.length) {
+                    flightStatus.textContent = 'Showing sample flights (local demo). Select a flight:';
+                }
+            }
+
+            if (flights.length === 0) {
+                flightStatus.textContent =
+                    'No sample flights found. Try Paris, Venice, Kyoto, or Bali.';
+                return;
+            }
+
+            if (!flightStatus.textContent.startsWith('Showing sample flights')) {
+                flightStatus.textContent = 'Select a flight:';
+            }
+
+            flights.forEach((flight) => {
+                    const card = document.createElement('article');
+                    card.className = 'flight-card';
+
+                    const details = document.createElement('div');
+                    const title = document.createElement('h2');
+                    title.textContent = `${flight.airline}: ${flight.from} to ${flight.to}`;
+
+                    const connection = document.createElement('p');
+                    connection.textContent =
+                        `${flight.stops} stop via ${flight.connection}`;
+
+                    const duration = document.createElement('p');
+                    duration.textContent = `Travel time: ${flight.duration}`;
+
+                    const fare = document.createElement('p');
+                    fare.className = 'flight-fare';
+                    fare.textContent = `Sample fare: $${flight.fare}`;
+
+                    details.append(title, connection, duration, fare);
+
+                    const chooseButton = document.createElement('button');
+                    chooseButton.type = 'button';
+                    chooseButton.textContent = 'Choose this flight';
+
+                    chooseButton.addEventListener('click', () => {
+                        selectedFlight = flight;
+                        bookingSection.hidden = false;
+                        bookingForm.reset();
+
+                        document.getElementById('selected-flight').textContent =
+                            `${flight.airline} · ${flight.from} to ${flight.to} · via ${flight.connection}`;
+
+                        flightTotal.textContent =
+                            'Choose your travel dates to see the sample fare.';
+
+                        bookFlightButton.disabled = true;
+                        bookingStatus.textContent = '';
+                        bookingSection.scrollIntoView({ behavior: 'smooth' });
+                    });
+
+                    card.append(details, chooseButton);
+                    flightList.appendChild(card);
+            });
+        });
+
+        function updateFlightFare() {
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+
+            if (!selectedFlight || !fromDate || !toDate || toDate <= fromDate) {
+                flightTotal.textContent =
+                    'Choose valid travel dates to see the sample fare.';
+                bookFlightButton.disabled = true;
+                return;
+            }
+
+            flightTotal.textContent =
+                `Sample total flight fare: $${selectedFlight.fare}`;
+            bookFlightButton.disabled = false;
+
+            toDateInput.min = fromDate;
+        }
+
+        fromDateInput.addEventListener('change', updateFlightFare);
+        toDateInput.addEventListener('change', updateFlightFare);
+
+        bookingForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!selectedFlight) return;
+
+            bookFlightButton.disabled = true;
+            bookingStatus.textContent = 'Submitting demo booking...';
+
+            const formData = new FormData(bookingForm);
+
+            const bookingDetails = {
+                bookingType: 'flight',
+                itemId: selectedFlight.id,
+                name: formData.get('name').trim(),
+                email: formData.get('email').trim(),
+                aadharNumber: formData.get('aadharNumber').trim(),
+                fromDate: fromDateInput.value,
+                toDate: toDateInput.value,
+                paymentAmount: formData.get('paymentAmount')
+            };
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingDetails)
+                });
+
+                const responseText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch {
+                    data = null;
+                }
+
+                if (!response.ok && data) {
+                    throw new Error(data.error || 'Could not submit booking.');
+                }
+
+                // If the old server has no booking API, confirm this as a local demo.
+                const bookingId = response.ok && data?.booking?.bookingId
+                    ? data.booking.bookingId
+                    : String(Math.floor(100000 + Math.random() * 900000));
+
+                document.getElementById('confirmation-message').textContent =
+                    `Your flight booking ID is ${bookingId}.`;
+
+                bookingStatus.textContent = '';
+                confirmationDialog.showModal();
+            } catch (error) {
+                console.error(error);
+                bookingStatus.textContent = error.message;
+                bookFlightButton.disabled = false;
+            }
+        });
+
+        document
+            .getElementById('close-confirmation')
+            .addEventListener('click', () => {
+                confirmationDialog.close();
+            });
+    </script>
+</body>
+</html>
